@@ -2,272 +2,248 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main() {
-    FILE *filestudents, *fileresults, *fileprofessor, *filesecretariado;
-    char aluno[100], professor[100], secretariado[100], linha[200];
-    float np1, np2, mfinal, exame, examefinal;
-    int opcao, opcao_secretariado, matricula, vid, vid2, encontrado = 0;
+main() {
+    FILE *filestudents, *fileprofessor, *filesecretariado, *filesenha_secretariado, *filematerias;
+    char aluno[100], professor[100], secretariado[100], linha_nome[200], linha_senha[200], senha_secretariado[100], materia[100];
+    int opcao, opcao_secretariado, codigo, opcao_professor, matricula, vid, vid2, encontrado = 0;
 
-    printf("\n=== Sistema Academico ===\n");
-    printf("\n=== Selecione uma dessas opcoes ===\n");
-    printf("1 - Primeiro acesso\n");
-    printf("2 - Entrar como aluno\n");
-    printf("3 - Entrar como professor\n");
-    printf("4 - Entrar como secretariado\n");
-    printf("0 - Sair\n");
-    printf("Escolha uma opcao: ");
-    scanf("%d", &opcao);
-    getchar();
-    
-    switch (opcao) {
+    do {
+        printf("\n=== Sistema Academico ===\n");
+        printf("1 - Primeiro acesso\n");
+        printf("2 - Entrar como aluno\n");
+        printf("3 - Entrar como professor\n");
+        printf("4 - Entrar como secretariado\n");
+        printf("0 - Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+        getchar();
 
-        case 1:
-            printf("\nPrimeiro acesso ao sistema\n");
-            printf("\nPor favor, efetue o cadastro do secretariado para o primeiro acesso");
-            printf("\nNome: ");
-            filesecretariado = fopen("C:\\Users\\Pichau\\OneDrive\\Documentos\\C\\secretario.txt", "a");
-            if (filesecretariado == NULL) {
-                printf("\nErro ao abrir arquivo de secretariado!\n");
-                return 0;
-            }
+        switch (opcao) {
 
-            fgets(secretariado, sizeof(secretariado), stdin);
-            secretariado[strcspn(secretariado, "\n")] = '\0';
+            case 1:
+                printf("\nPrimeiro acesso ao sistema\n");
+                printf("Por favor, efetue o cadastro do secretariado:\n");
+                printf("Nome: ");
 
-            printf("Registro: ");
-            scanf("%i", &matricula);
-            getchar();
-
-            fprintf(filesecretariado, "%s %i\n", secretariado, matricula);
-            fclose(filesecretariado);
-            printf("Cadastro realizado com sucesso!\n");
-            break;
-        
-        case 4:
-            printf("\n=== Login Secretariado ===\n");
-            filesecretariado = fopen("C:\\Users\\Pichau\\OneDrive\\Documentos\\C\\secretario.txt", "r");
-
-            if (filesecretariado == NULL) {
-                printf("Erro, nenhum usuario cadastrado\n");
-                return 0;
-            }
-
-            printf("Por favor, digite seu nome: ");
-            fgets(secretariado, sizeof(secretariado), stdin);
-            secretariado[strcspn(secretariado, "\n")] = '\0';
-
-            encontrado = 0;
-            while (fgets(linha, sizeof(linha), filesecretariado)) {
-                if (strstr(linha, secretariado)) {
-                    encontrado = 1;
-                    break;
+                filesecretariado = fopen("secretario.csv", "a");
+                filesenha_secretariado = fopen("senha_secretario.csv", "a");
+                if (filesecretariado == NULL) {
+                    printf("Erro ao abrir arquivo de secretariado!\n");
+                    return 0;
                 }
-            }
-            fclose(filesecretariado);
 
-            if (!encontrado) {
-                printf("Secretario '%s' nao encontrado! Nao e possivel acessar o menu.\n", secretariado);
-                return 0;
-            }
+                fgets(secretariado, sizeof(secretariado), stdin);
+                secretariado[strcspn(secretariado, "\n")] = '\0';
 
-            do {
-                printf("\n=== MENU SECRETARIADO ===\n");
-                printf("1 - Cadastrar Estudante\n");
-                printf("2 - Cadastrar Professor\n");
-                printf("3 - Cadastrar Secretariado\n");
-                printf("4 - Lancar notas de estudante\n");
-                printf("0 - Sair\n");
-                printf("Escolha uma opcao: ");
-                scanf("%d", &opcao_secretariado);
+                printf("Registro: ");
+                scanf("%i", &matricula);
                 getchar();
 
-                switch (opcao_secretariado) {
-                    case 1:
-                        filestudents = fopen("C:\\Users\\Pichau\\OneDrive\\Documentos\\C\\students.txt", "a");
-                        if (filestudents == NULL) {
-                            printf("Erro ao abrir arquivo de estudantes!\n");
-                            break;
-                        }
+                printf("\nAgora, defina uma senha: ");
+                fgets(senha_secretariado, sizeof(senha_secretariado), stdin);
 
-                        printf("Digite o nome do estudante: ");
-                        fgets(aluno, sizeof(aluno), stdin);
-                        aluno[strcspn(aluno, "\n")] = '\0';
+                fprintf(filesecretariado, "%s,%i\n", secretariado, matricula);
+                fprintf(filesenha_secretariado, "%s\n", senha_secretariado);
+                fclose(filesenha_secretariado);
+                fclose(filesecretariado);
+                printf("Cadastro realizado com sucesso!\n");
+                break;
 
-                        printf("Digite a matricula do estudante: ");
-                        scanf("%i", &matricula);
-                        getchar();
+            case 3:
+                printf("\n=== Login Professor ===\n");
+                fileprofessor = fopen("professor.csv", "r");
 
-                        fprintf(filestudents,         
-                            "\n==============================\n"
-                            "Estudante: %s\n"
-                            "Matricula: %i\n"
-                            "==============================\n\n", aluno, matricula);
-                        fclose(filestudents);
-                        printf("Aluno cadastrado com sucesso!\n");
-                        break;
-
-                    case 2:
-                        fileprofessor = fopen("C:\\Users\\Pichau\\OneDrive\\Documentos\\C\\professor.txt", "a");
-                        if (fileprofessor == NULL) {
-                            printf("Erro ao abrir arquivo de professores!\n");
-                            break;
-                        }
-                        printf("Digite o nome do professor: ");
-                        fgets(professor, sizeof(professor), stdin);
-                        professor[strcspn(professor, "\n")] = '\0';
-
-                        printf("Digite a matricula do professor: ");
-                        scanf("%i", &vid);
-                        getchar();
-
-                        fprintf(fileprofessor,                
-                            "\n==============================\n"
-                            "Professor: %s\n"
-                            "Matricula: %i\n"
-                            "==============================\n\n", professor, vid);
-                        fclose(fileprofessor);
-                        printf("Professor cadastrado com sucesso!\n");
-                        break;
-
-                    case 3:
-                        filesecretariado = fopen("C:\\Users\\Pichau\\OneDrive\\Documentos\\C\\secretario.txt", "a");
-                        if (filesecretariado == NULL) {
-                            printf("Erro ao abrir arquivo de secretariado!\n");
-                            break;
-                        }
-                        printf("Digite o nome do secretario: ");
-                        fgets(secretariado, sizeof(secretariado), stdin);
-                        secretariado[strcspn(secretariado, "\n")] = '\0';
-
-                        printf("Digite a matricula do secretario: ");
-                        scanf("%i", &vid2);
-                        getchar();
-
-                        fprintf(filesecretariado,                 
-                            "\n==============================\n"
-                            "Secretario: %s\n"
-                            "Matricula: %i\n"
-                            "==============================\n\n", secretariado, vid2);
-                        fclose(filesecretariado);
-                        printf("Secretario cadastrado com sucesso!\n");
-                        break;
-
-                    case 4:
-                        encontrado = 0; 
-                        printf("Digite o nome do estudante: ");
-                        fgets(aluno, sizeof(aluno), stdin);
-                        aluno[strcspn(aluno, "\n")] = '\0';
-
-                        filestudents = fopen("C:\\Users\\Pichau\\OneDrive\\Documentos\\C\\students.txt", "r");
-                        if (filestudents == NULL) {
-                            printf("Erro ao abrir o arquivo de estudantes!\n");
-                            break;
-                        }
-
-                        while (fgets(linha, sizeof(linha), filestudents)) {
-                            if (strstr(linha, aluno)) {
-                                encontrado = 1;
-                                break;
-                            }
-                        }
-                        fclose(filestudents);
-
-                        if (!encontrado) {
-                            printf("Estudante '%s' nao encontrado! Nao e possivel lancar notas.\n", aluno);
-                            break;
-                        }
-
-                        fileresults = fopen("C:\\Users\\Pichau\\OneDrive\\Documentos\\C\\results.txt", "a");
-                        if (!fileresults) {
-                            printf("Erro ao abrir o arquivo de resultados!\n");
-                            break;
-                        }
-
-                        printf("Digite a primeira nota: ");
-                        scanf("%f", &np1);
-                        printf("Digite a segunda nota: ");
-                        scanf("%f", &np2);
-                        getchar();
-
-                        mfinal = (np1 + np2) / 2.0;
-
-                        if (mfinal >= 7.0) {
-                            printf("Aprovado (media: %.2f)\n", mfinal);
-                            fprintf(fileresults,                 
-                                "\n==============================\n"
-                                "Estudante: %s\n"
-                                "Nota 1: %.2f\n"
-                                "Nota 2: %.2f\n"
-                                "Media final: %.2f\n"
-                                "Resultado: Aprovado\n"
-                                "==============================\n\n", aluno, np1, np2, mfinal);
-                        } else if (mfinal >= 4.0) {
-                            printf("Exame necessario (media: %.2f)\n", mfinal);
-                            printf("Digite a nota do exame: ");
-                            scanf("%f", &exame);
-                            getchar();
-
-                            examefinal = (exame + mfinal) / 2.0;
-
-                            if (examefinal >= 7.0) {
-                                printf("Aprovado apos exame (media final: %.2f)\n", examefinal);
-                                fprintf(fileresults,             
-                                    "\n==============================\n"
-                                    "Estudante: %s\n"
-                                    "Nota 1: %.2f\n"
-                                    "Nota 2: %.2f\n"
-                                    "Media final: %.2f\n"
-                                    "Exame: %.2f\n"
-                                    "Resultado: Aprovado\n"
-                                    "==============================\n\n", aluno, np1, np2, mfinal, exame);
-                            } else {
-                                printf("Reprovado (media final: %.2f)\n", examefinal);
-                                fprintf(fileresults,             
-                                    "\n==============================\n"
-                                    "Estudante: %s\n"
-                                    "Nota 1: %.2f\n"
-                                    "Nota 2: %.2f\n"
-                                    "Media final: %.2f\n"
-                                    "Exame: %.2f\n"
-                                    "Resultado: Reprovado\n"
-                                    "==============================\n\n", aluno, np1, np2, mfinal, exame);
-                            }
-                        } else {
-                            printf("Reprovado direto (media: %.2f)\n", mfinal);
-                            fprintf(fileresults,             
-                                "\n==============================\n"
-                                "Estudante: %s\n"
-                                "Nota 1: %.2f\n"
-                                "Nota 2: %.2f\n"
-                                "Media final: %.2f\n"
-                                "Resultado: Reprovado\n"
-                                "==============================\n\n", aluno, np1, np2, mfinal);
-                        }
-
-                        fclose(fileresults);
-                        break;
-
-                    case 0:
-                        printf("Encerrando menu do secretariado...\n");
-                        break;
-
-                    default:
-                        printf("Opcao invalida!\n");
-                        break;
+                if (fileprofessor == NULL) {
+                    printf("Erro, nenhum usuario cadastrado\n");
+                    return 0;
                 }
 
-            } while (opcao_secretariado != 0);
-            break;
+                printf("Por favor, digite seu nome: ");
+                fgets(professor, sizeof(professor), stdin);
+                professor[strcspn(professor, "\n")] = '\0';
 
-        case 0:
-            printf("Saindo...\n");
-            break;
+                encontrado = 0;
+                while (fgets(linha_nome, sizeof(linha_nome), fileprofessor)) {
+                    if (strstr(linha_nome, professor)) {
+                        encontrado = 1;
+                        break;
+                    }
+                }
+                fclose(fileprofessor);
 
-        default:
-            printf("Opcao invalida!\n");
-            break;
-    }
+                if (!encontrado) {
+                    printf("Professor '%s' nao encontrado! Nao e possivel acessar o menu.\n", professor);
+                    return 0;
+                }
+
+                do {
+                    printf("\n=== MENU PROFESSOR ===\n");
+                    printf("0 - Sair\n");
+                    printf("Escolha uma opcao: ");
+                    scanf("%d", &opcao_professor);
+                    getchar();
+
+                    switch (opcao_professor) {
+                        case 0:
+                            printf("Encerrando menu do professor...\n");
+                            break;
+
+                        default:
+                            printf("Opcao invalida!\n");
+                            break;
+                    }
+
+                } while (opcao_professor != 0);
+                break;
+
+            case 4:
+                printf("\n=== Login Secretariado ===\n");
+                filesecretariado = fopen("secretario.csv", "r");
+                filesenha_secretariado = fopen("senha_secretario.csv", "r");
+
+                if (filesecretariado == NULL) {
+                    printf("Erro, nenhum usuario cadastrado\n");
+                    return 0;
+                }
+
+                printf("Por favor, digite seu nome: ");
+                fgets(secretariado, sizeof(secretariado), stdin);
+                secretariado[strcspn(secretariado, "\n")] = '\0';
+
+                printf("\nPor favor, digite sua senha: ");
+                fgets(senha_secretariado, sizeof(senha_secretariado), stdin);
+
+                encontrado = 0;
+                while (fgets(linha_nome, sizeof(linha_nome), filesecretariado) &&
+                       fgets(linha_senha, sizeof(linha_senha), filesenha_secretariado)) {
+                    if (strstr(linha_nome, secretariado) && strstr(linha_senha, senha_secretariado)) {
+                        encontrado = 1;
+                        break;
+                    }
+                }
+                fclose(filesenha_secretariado);
+                fclose(filesecretariado);
+
+                if (!encontrado) {
+                    printf("Secretario '%s' nao encontrado! Nao e possivel acessar o menu.\n", secretariado);
+                    return 0;
+                }
+
+                do {
+                    printf("\n=== MENU SECRETARIADO ===\n");
+                    printf("1 - Cadastrar Estudante\n");
+                    printf("2 - Cadastrar Professor\n");
+                    printf("3 - Cadastrar Secretariado\n");
+                    printf("4 - Incluir Materia\n");
+                    printf("0 - Sair\n");
+                    printf("Escolha uma opcao: ");
+                    scanf("%d", &opcao_secretariado);
+                    getchar();
+
+                    switch (opcao_secretariado) {
+                        case 1:
+                            filestudents = fopen("students.csv", "a");
+                            if (filestudents == NULL) {
+                                printf("Erro ao abrir arquivo de estudantes!\n");
+                                break;
+                            }
+
+                            printf("Digite o nome do estudante: ");
+                            fgets(aluno, sizeof(aluno), stdin);
+                            aluno[strcspn(aluno, "\n")] = '\0';
+
+                            printf("Digite a matricula do estudante: ");
+                            scanf("%i", &matricula);
+                            getchar();
+
+                            fprintf(filestudents, "%s,%i\n", aluno, matricula);
+                            fclose(filestudents);
+                            printf("Aluno cadastrado com sucesso!\n");
+                            break;
+
+                        case 2:
+                            fileprofessor = fopen("professor.csv", "a");
+                            if (fileprofessor == NULL) {
+                                printf("Erro ao abrir arquivo de professores!\n");
+                                break;
+                            }
+
+                            printf("Digite o nome do professor: ");
+                            fgets(professor, sizeof(professor), stdin);
+                            professor[strcspn(professor, "\n")] = '\0';
+
+                            printf("Digite a matricula do professor: ");
+                            scanf("%i", &vid);
+                            getchar();
+
+                            fprintf(fileprofessor, "%s,%i\n", professor, vid);
+                            fclose(fileprofessor);
+                            printf("Professor cadastrado com sucesso!\n");
+                            break;
+
+                        case 3:
+                            filesecretariado = fopen("secretario.csv", "a");
+                            if (filesecretariado == NULL) {
+                                printf("Erro ao abrir arquivo de secretariado!\n");
+                                break;
+                            }
+
+                            printf("Digite o nome do secretario: ");
+                            fgets(secretariado, sizeof(secretariado), stdin);
+                            secretariado[strcspn(secretariado, "\n")] = '\0';
+
+                            printf("Digite a matricula do secretario: ");
+                            scanf("%i", &vid2);
+                            getchar();
+
+                            fprintf(filesecretariado, "%s,%i\n", secretariado, vid2);
+                            fclose(filesecretariado);
+                            printf("Secretario cadastrado com sucesso!\n");
+                            break;
+
+                        case 4:
+
+                            filematerias = fopen("materias.csv", "a");
+                            if (filematerias == NULL) {
+                                printf("Erro ao abrir o arquivo de materias!\n");
+                                break;
+                            }
+
+                            printf("Digite o nome da materia: ");
+                            fgets(materia, sizeof(materia), stdin);
+                            materia[strcspn(materia, "\n")] = '\0';
+
+                            printf("Digite o codigo da materia: ");
+                            scanf("%d", &codigo);
+                            getchar();
+
+                            fprintf(filematerias, "%s,%d\n", materia, codigo);
+                            fclose(filematerias);
+                            printf("Materia cadastrada com sucesso!\n");
+                            break;
+
+                        case 0:
+                            printf("Encerrando menu do secretariado...\n");
+                            break;
+
+                        default:
+                            printf("Opcao invalida!\n");
+                            break;
+                    }
+
+                } while (opcao_secretariado != 0);
+                break;
+
+            case 0:
+                printf("Saindo...\n");
+                break;
+
+            default:
+                printf("Opcao invalida!\n");
+                break;
+        }
+
+    } while (opcao != 0);
 
     return 0;
 }
-
